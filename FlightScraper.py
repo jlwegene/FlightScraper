@@ -7,17 +7,22 @@ import time
 
 class FlightScraper:
     def __init__(self):
-        self.currentDeals = []
+        self.currentDeals = self.getTitles()
         self.voice = Voice()
         self.voice.login()
-        self.numbers = ['8123455508', '5073180082']
+        self.iterations = 0
         self.s = sched.scheduler(time.time, time.sleep)
         self.s.enter(1, 1, self.loop, ())
         self.s.run()
 
     def getTitles(self):
-        page = requests.get('http://www.theflightdeal.com/category/flight-deals\
-        /chicago/')
+        try:
+            page = requests.get('http://www.theflightdeal.com/category/flight-\
+            deals/chicago/')
+        except:
+            print "Failed to load page"
+            return []
+
         tree = html.fromstring(page.content)
         parents = tree.xpath("//h1[@class='post-title']")
         titles = []
@@ -27,7 +32,6 @@ class FlightScraper:
 
     def remove_non_ascii(self, text):
         return ''.join(i for i in text if ord(i) < 128)
-        # return text.decode('unicode_escape').encode('ascii', 'ignore')
 
     def update(self):
         titles = self.getTitles()
@@ -37,21 +41,24 @@ class FlightScraper:
                 newTitles.append(t)
                 print t
                 self.sendText(t)
-
             else:
                 break
 
         self.currentDeals = newTitles + self.currentDeals
 
     def sendText(self, msg):
-        for num in self.numbers:
+        numberFile = open('numbers', 'r')
+        for num in numberFile:
             try:
                 self.voice.send_sms(num, msg)
             except:
                 print "Failed to send text " + msg
+                print "Failed number was " + num
+        numberFile.close()
 
     def loop(self):
-        print "Updating deals. . ."
+        print "Updating deals, currently on iteration: " + str(self.iterations)
+        self.iterations += 1
         self.update()
         self.s.enter(300, 1, self.loop, ())
 
