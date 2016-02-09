@@ -83,7 +83,7 @@ class FlightScraper:
                 self.sendText(t)
             else:
                 break
-        [self.currentDeals.add(x) for x in newTitles]
+        self.currentDeals = {x for x in titles}
 
     '''
     Sends a msg to each number in numbers.txt.  Used by update function for
