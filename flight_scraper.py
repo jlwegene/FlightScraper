@@ -1,12 +1,13 @@
+DEAL_PAGE = "http://www.theflightdeal.com/category/flight-deals/chicago/"
+PHONE_NUMBER_FILE = "numbers.txt"
+CONFIG_FILE = "config.txt"
+
+
 from lxml import html
 from googlevoice import Voice
 import requests
 import sched
 import time
-
-DEAL_PAGE = "http://www.theflightdeal.com/category/flight-deals/chicago/"
-PHONE_NUMBER_FILE = "numbers.txt"
-CONFIG_FILE = "config.txt"
 
 '''
 Removes non printable characters.
